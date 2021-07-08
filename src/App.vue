@@ -7,9 +7,6 @@
       <router-link :to="{ name: 'JobList' }">
         Jobs Status
       </router-link> |
-      <router-link :to="{ name: 'Analysis' }">
-        Analysis
-      </router-link> |
       <router-link :to="{ name: 'About' }">
         About
       </router-link>
