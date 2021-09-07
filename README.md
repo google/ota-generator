@@ -1,7 +1,12 @@
 # OTAGUI
 
 ## Introduction
-OTAGUI is a web interface for ota_from_target_files. Currently, it can only run locally.
+OTAGUI is a web interface for `ota_from_target_files`. Currently, it can only run locally.
+
+`ota_from_target_files` is Android's standard tool for building OTA packages. It's source
+is available in [aosp](https://cs.android.com/android/platform/superproject/+/master:build/make/tools/releasetools/ota_from_target_files.py).
+Binaries of `ota_from_target_files` is available in [ci.android.com](https://ci.android.com).
+For documentation about `ota_from_target_files` , lick on the aosp link.
 
 OTAGUI use VUE.js as a frontend and python as a backend interface to ota_from_target_files.
 
