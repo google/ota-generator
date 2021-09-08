@@ -16,7 +16,8 @@
 FROM node:lts-alpine as build-stage
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+COPY yarn.lock ./
+RUN yarn install
 COPY src ./src
 COPY public ./public
 COPY *.js .
@@ -31,7 +32,9 @@ RUN apt-get update && apt-get --no-install-recommends install -y python3.9 unzip
 
 WORKDIR /app
 VOLUME [ "/app/target", "/app/output"]
+
 COPY otatools.zip .
+RUN zip otatools.zip -d bin/sign_apex bin/aapt2 bin/merge_target_files bin/sign_target_files_apks bin/add_img_to_target_files bin/build_image bin/validate_target_files bin/img_from_target_files bin/check_target_files_vintf bin/build_super_image bin/mkuserimg_mke2fs bin/mk_combined_img bin/apexer bin/build_verity_metadata bin/fc_sort "*.pyc" || true
 COPY --from=build-stage /app/dist ./dist
 COPY *.py .
 

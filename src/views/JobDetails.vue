@@ -114,11 +114,11 @@ export default {
           this.stderr.scrollTo({
             top: this.stderrBottom.offsetTop,
             behavior: 'smooth',
-          })
+          });
           this.stdout.scrollTo({
             top: this.stdoutBottom.offsetTop,
             behavior: 'smooth',
-          })
+          });
         })
       } catch (err) {
         console.log(err)
@@ -138,6 +138,7 @@ export default {
 .stderr,
 .stdout {
   overflow: scroll;
+  scroll-behavior: smooth;
   height: 160px;
 }
 
