@@ -31,3 +31,4 @@ pnpm-debug.log*
 
 packaged
 **/.DS_Store
+*.pyc
