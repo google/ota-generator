@@ -43,6 +43,14 @@ class JobInfo:
     isPartial: bool = False
     isIncremental: bool = False
 
+    @property
+    def is_running(self):
+        return self.status == 'Running'
+
+    @property
+    def is_killed(self):
+        return self.status == 'Killed'
+
     def __post_init__(self):
 
         def enforce_bool(t): return t if isinstance(t, bool) else bool(t)
@@ -167,6 +175,12 @@ class ProcessesManagement:
                 FinishTime INTEGER
             )
             """)
+        for job in self.get_running_jobs():
+            end_time = min(os.stat(job.stdout).st_mtime,
+                           os.stat(job.stderr).st_mtime)
+            logging.info(
+                "Updating %s to status 'Killed', end time %d", job.id, end_time)
+            self.update_status(job.id, 'Killed', end_time)
 
     def insert_database(self, job_info):
         """
@@ -193,12 +207,24 @@ class ProcessesManagement:
             cursor = connect.cursor()
             logging.info(id)
             cursor.execute("""
-            SELECT ID, TargetPath, IncrementalPath, Verbose, Partial, OutputPath, Status, Downgrade, OtherFlags, STDOUT, STDERR, StartTime, FinishTime
+            SELECT *
             FROM Jobs WHERE ID=(?)
             """, (str(id),))
             row = cursor.fetchone()
         status = JobInfo(*row)
         return status
+
+    def get_running_jobs(self):
+        with sqlite3.connect(self.path) as connect:
+            cursor = connect.cursor()
+            cursor.execute("""
+            SELECT *
+            FROM Jobs
+            WHERE Status == 'Running'
+            """)
+            rows = cursor.fetchall()
+            statuses = [JobInfo(*row) for row in rows]
+            return statuses
 
     def get_status(self):
         """
@@ -209,7 +235,7 @@ class ProcessesManagement:
         with sqlite3.connect(self.path) as connect:
             cursor = connect.cursor()
             cursor.execute("""
-            SELECT ID, TargetPath, IncrementalPath, Verbose, Partial, OutputPath, Status, Downgrade, OtherFlags, STDOUT, STDERR, StartTime, FinishTime
+            SELECT *
             FROM Jobs
             """)
             rows = cursor.fetchall()
@@ -249,6 +275,7 @@ class ProcessesManagement:
         try:
             proc = subprocess.Popen(
                 command, stderr=ferr, stdout=fout, shell=False, env=env, cwd=self.otatools_dir)
+            self.update_status(id, 'Running', 0)
         except FileNotFoundError as e:
             logging.error('ota_from_target_files is not set properly %s', e)
             self.update_status(id, 'Error', int(time.time()))
@@ -259,11 +286,13 @@ class ProcessesManagement:
             raise
 
         def wait_result():
-            exit_code = proc.wait()
-            if exit_code == 0:
-                self.update_status(id, 'Finished', int(time.time()))
-            else:
-                self.update_status(id, 'Error', int(time.time()))
+            try:
+                exit_code = proc.wait()
+            finally:
+                if exit_code == 0:
+                    self.update_status(id, 'Finished', int(time.time()))
+                else:
+                    self.update_status(id, 'Error', int(time.time()))
         threading.Thread(target=wait_result).start()
 
     def ota_generate(self, args, id):
@@ -310,7 +339,7 @@ class ProcessesManagement:
                            partial=args['partial'] if args['isPartial'] else [
                            ],
                            output=args['output'],
-                           status='Running',
+                           status='Pending',
                            extra=args['extra'],
                            start_time=int(time.time()),
                            stdout=stdout,
