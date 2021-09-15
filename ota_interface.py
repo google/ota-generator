@@ -345,8 +345,8 @@ class ProcessesManagement:
                            stdout=stdout,
                            stderr=stderr
                            )
-        self.ota_run(command, id, job_info.stdout, job_info.stderr)
         self.insert_database(job_info)
+        self.ota_run(command, id, job_info.stdout, job_info.stderr)
         logging.info(
             'Starting generating OTA package with id {}: \n {}'
             .format(id, command))
