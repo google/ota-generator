@@ -5,6 +5,7 @@ zip otatools.zip -d bin/sign_apex bin/aapt2 \
 	bin/validate_target_files bin/img_from_target_files \
 	bin/check_target_files_vintf bin/build_super_image \
 	bin/mkuserimg_mke2fs bin/mk_combined_img bin/apexer \
+	bin/zucchini \
 	bin/build_verity_metadata bin/fc_sort "*.pyc" || true
 
 image_id=$(docker build -q .)
