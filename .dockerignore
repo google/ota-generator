@@ -5,3 +5,4 @@ dist
 output
 target
 *.db
+.git
