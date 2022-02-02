@@ -1,7 +1,7 @@
-# OTAGUI
+# ota-generator 
 
 ## Introduction
-OTAGUI is a web interface for `ota_from_target_files`. Currently, it can only run locally.
+ota-generator is a web interface for `ota_from_target_files`. Currently, it can only run locally.
 
 `ota_from_target_files` is Android's standard tool for building OTA packages. It's source
 is available in [aosp](https://cs.android.com/android/platform/superproject/+/master:build/make/tools/releasetools/ota_from_target_files.py).
