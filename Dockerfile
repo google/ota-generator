@@ -28,7 +28,7 @@ RUN npm run build
 
 # production stage
 FROM ubuntu:20.04 as production-stage
-RUN apt-get update && apt-get --no-install-recommends install -y python3.9 unzip xxd cgpt unzip openjdk-16-jre-headless zip less
+RUN apt-get update && apt-get --no-install-recommends install -y python3.9 unzip xxd cgpt openjdk-16-jre-headless zip less
 
 WORKDIR /app
 VOLUME [ "/app/target", "/app/output"]
